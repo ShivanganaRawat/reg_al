@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Models
+*.pth
+
+#Directories
+checkpoint/
+mmsegmentation.egg-info/
+work_dirs/
+data/

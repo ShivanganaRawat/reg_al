@@ -1,1 +1,1 @@
-# reg_al
+#Region based Active Learning for Semantic Segmentation
