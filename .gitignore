@@ -136,3 +136,6 @@ checkpoint/
 mmsegmentation.egg-info/
 work_dirs/
 data/
+
+#wget
+wget-log
