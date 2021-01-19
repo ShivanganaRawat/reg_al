@@ -17,7 +17,9 @@ def intersect_and_union(pred_label, label, num_classes, ignore_index):
              classes
          ndarray: The prediction histogram on all classes.
          ndarray: The ground truth histogram on all classes.
+
     """
+
 
     mask = (label != ignore_index)
     pred_label = pred_label[mask]
@@ -149,6 +151,7 @@ def eval_metrics(results,
          ndarray: Per category evalution metrics, shape (num_classes, )
     """
 
+
     if isinstance(metrics, str):
         metrics = [metrics]
     allowed_metrics = ['mIoU', 'mDice']
@@ -173,4 +176,5 @@ def eval_metrics(results,
         ret_metrics = [
             np.nan_to_num(metric, nan=nan_to_num) for metric in ret_metrics
         ]
+
     return ret_metrics

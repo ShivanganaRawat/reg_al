@@ -36,14 +36,16 @@ def train_segmentor(model,
                     distributed=False,
                     validate=False,
                     timestamp=None,
-                    meta=None):
+                    meta=None, al=False):
+
     """Launch segmentor training."""
     logger = get_root_logger(cfg.log_level)
+
 
     # prepare data loaders
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
     data_loaders = [
-        build_dataloader(
+        build_dataloader(cfg,
             ds,
             cfg.data.samples_per_gpu,
             cfg.data.workers_per_gpu,
@@ -51,7 +53,7 @@ def train_segmentor(model,
             len(cfg.gpu_ids),
             dist=distributed,
             seed=cfg.seed,
-            drop_last=True) for ds in dataset
+            drop_last=True, al=al, is_train = not bool(i), labeled=True) for i, ds in enumerate(dataset)
     ]
 
     # put model on gpus
@@ -77,6 +79,9 @@ def train_segmentor(model,
             'config is now expected to have a `runner` section, '
             'please set `runner` in your config.', UserWarning)
 
+    #for i in data_loaders[0]:
+    #    print(i)
+
     runner = build_runner(
         cfg.runner,
         default_args=dict(
@@ -98,7 +103,7 @@ def train_segmentor(model,
     # register eval hooks
     if validate:
         val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
-        val_dataloader = build_dataloader(
+        val_dataloader = build_dataloader(cfg, 
             val_dataset,
             samples_per_gpu=1,
             workers_per_gpu=cfg.data.workers_per_gpu,

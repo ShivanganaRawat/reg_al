@@ -136,6 +136,12 @@ checkpoint/
 mmsegmentation.egg-info/
 work_dirs/
 data/
+*_results/
 
 #wget
 wget-log
+
+#images
+*.jpg
+*.jpeg
+*.png

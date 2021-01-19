@@ -23,6 +23,7 @@ def cross_entropy(pred,
         reduction='none',
         ignore_index=ignore_index)
 
+
     # apply weights and do the reduction
     if weight is not None:
         weight = weight.float()
@@ -37,6 +38,7 @@ def _expand_onehot_labels(labels, label_weights, target_shape, ignore_index):
     bin_labels = labels.new_zeros(target_shape)
     valid_mask = (labels >= 0) & (labels != ignore_index)
     inds = torch.nonzero(valid_mask, as_tuple=True)
+    z#print("Inside _expand_onehot_labels")
 
     if inds[0].numel() > 0:
         if labels.dim() == 3:
@@ -91,6 +93,8 @@ def binary_cross_entropy(pred,
     loss = F.binary_cross_entropy_with_logits(
         pred, label.float(), pos_weight=class_weight, reduction='none')
     # do the reduction for the weighted loss
+    #print("loss value from binary_cross_entropy", loss)
+
     loss = weight_reduce_loss(
         loss, weight, reduction=reduction, avg_factor=avg_factor)
 
@@ -131,6 +135,7 @@ def mask_cross_entropy(pred,
     num_rois = pred.size()[0]
     inds = torch.arange(0, num_rois, dtype=torch.long, device=pred.device)
     pred_slice = pred[inds, label].squeeze(1)
+    #print("Inside mask_cross_entropy")
     return F.binary_cross_entropy_with_logits(
         pred_slice, target, weight=class_weight, reduction='mean')[None]
 
@@ -187,6 +192,7 @@ class CrossEntropyLoss(nn.Module):
             class_weight = cls_score.new_tensor(self.class_weight)
         else:
             class_weight = None
+        #print("Inside cross_entropy forward")
         loss_cls = self.loss_weight * self.cls_criterion(
             cls_score,
             label,

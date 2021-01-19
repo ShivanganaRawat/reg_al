@@ -9,8 +9,8 @@ import torch
 from mmcv.runner import init_dist
 from mmcv.utils import Config, DictAction, get_git_hash
 
-from mmseg import __version__
-from mmseg.apis import set_random_seed, train_segmentor
+#from mmseg import __version__
+from mmseg.apis.train import set_random_seed, train_segmentor
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.utils import collect_env, get_root_logger
@@ -127,12 +127,15 @@ def main():
     meta['seed'] = args.seed
     meta['exp_name'] = osp.basename(args.config)
 
+
+
     model = build_segmentor(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
 
     logger.info(model)
 
     datasets = [build_dataset(cfg.data.train)]
+
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
         val_dataset.pipeline = cfg.data.train.pipeline
@@ -141,12 +144,18 @@ def main():
         # save mmseg version, config file content and class names in
         # checkpoints as meta data
         cfg.checkpoint_config.meta = dict(
-            mmseg_version=f'{__version__}+{get_git_hash()[:7]}',
+            #mmseg_version=f'{__version__}+{get_git_hash()[:7]}',
             config=cfg.pretty_text,
             CLASSES=datasets[0].CLASSES,
             PALETTE=datasets[0].PALETTE)
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
+
+    print("inside train tools")
+    #print(model)
+    #print(datasets)
+    #print(cfg)
+    
     train_segmentor(
         model,
         datasets,
@@ -155,6 +164,7 @@ def main():
         validate=(not args.no_validate),
         timestamp=timestamp,
         meta=meta)
+        
 
 
 if __name__ == '__main__':
