@@ -62,6 +62,11 @@ class BaseSegmentor(nn.Module):
         """Placeholder for augmentation test."""
         pass
 
+    #@abstractmethod
+    #def whole_inference(self, img, img_meta, rescale):
+        """Inference with full image."""
+    #    pass
+
     def init_weights(self, pretrained=None):
         """Initialize the weights in segmentor.
 
@@ -108,7 +113,7 @@ class BaseSegmentor(nn.Module):
             return self.aug_test(imgs, img_metas, **kwargs)
 
     @auto_fp16(apply_to=('img', ))
-    def forward(self, img, img_metas, return_loss=True, **kwargs):
+    def forward(self, img, img_metas, return_loss=True, return_logits=False, **kwargs):
         """Calls either :func:`forward_train` or :func:`forward_test` depending
         on whether ``return_loss`` is ``True``.
 
@@ -118,6 +123,8 @@ class BaseSegmentor(nn.Module):
         should be double nested (i.e.  List[Tensor], List[List[dict]]), with
         the outer list indicating test time augmentations.
         """
+        if return_logits:
+            return self.whole_inference(img, img_metas, rescale=True)
         if return_loss:
             return self.forward_train(img, img_metas, **kwargs)
         else:
